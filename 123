@@ -1,0 +1,917 @@
+// June19, 2012 Hamilton West + NO2. Toronto West +SO2 +CO since 2010.
+//Updated April 13, 2012; Feb 3, 2012, -- Added 2011 pollutnat data based on 2010 data set
+// Jan 4, 2013 London 15025 to be replaced with London 15026
+// Jan 4, 2013 Sudbury 77219 to be replaced with Sudbury 77233
+// Jan 16, 2014 new kingston station
+// Dec 24, 2014 Added NOx/No2/N0 stations and 2015 stations
+// Jan 5, 2016 added 2016 Data
+// feb 9, 2016 added sarnia new station id 14110
+// april 7 2017  fixed multiple station logic
+// Jan 10, 2019  fixed multiple station logic
+// Feb 5, 2020  update station logic
+
+var Years = 				[10000,20000, [2,0,0,0, , , ],	[2,0,0,1, , , ],	[2,0,0,2, , , ],	[2,0,0,3, , , ],	[2,0,0,4, , , ],	[2,0,0,5, , , ],	[2,0,0,6, , , ],	[2,0,0,7, , , ],	[2,0,0,8, , , ],	[2,0,0,9, , , ],	[2,0,1,0, , , ], [2,0,1,1, , , ], [2,0,1,2, , , ], [2,0,1,3, , , ], [2,0,1,4, , , ], [2,0,1,5, , , ], [2,0,1,6, , , ], [2,0,1,7, , , ], [2,0,1,8, , , ], [2,0,1,9, , , ], [2,0,1,9, , , ]];
+var Windsor_Downtown = 		[12008,,	  [1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,0,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1][1,1,1,1,1,1,1]];
+var Windsor_West = 		  	[12016,,	  [1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Chatham=				[13001,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Merlin = 				[13021,,	  [0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0]];
+var Sarnia = 				[14064,14110, [1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Sarnia_2 = 				[14111,14110, [1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Grand_Bend = 			[15020,,	  [0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var London = 				[15025,15026, [1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[0,1,1,1,0,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Port_Stanley = 			[16015,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Tiverton = 				[18007,,	  [0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Brantford = 			[21005,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Simcoe = 				[22071,,	  [1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0]];
+var Kitchener = 			[26060,,	  [1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,0,0,0,1,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var St_Catharines = 		[27067,,	  [1,1,1,1,0,1,0],	[1,0,0,0,1,1,0],	[1,1,1,1,1,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Guelph = 				[28028,,	  [0,0,0,0,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Hamilton_Downtown = 	[29000,,	  [1,1,1,1,1,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,0,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1]];
+var Hamilton_Mountain = 	[29114,29214, [1,0,0,0,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Hamilton_West = 		[29118,,	  [1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[0,1,1,1,1,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1], [0,0,1,0,0,1,1]];
+var Toronto_Downtown = 	    [31103,31129, [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Toronto_East = 			[33003,,	  [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Toronto_North = 		[34020,34021, [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Toronto_West = 			[35003,35125, [1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1]];
+var Burlington = 			[44008,,	  [0,1,1,1,0,1,0],	[0,1,1,1,1,1,0],	[0,1,1,1,0,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Oakville = 	   			[44015,44017, [0,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Oshawa = 	   			[45025,45026, [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Oshawa2 = 	   			[45027,45026, [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Brampton = 				[46089,46090, [1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Mississauga = 			[46109,46110, [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[1,1,1,1,0,1,1],	[1,0,0,0,1,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1]];
+var Mississauga2 = 			[46108,46109, [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[1,1,1,1,0,1,1],	[1,0,0,0,1,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Barrie = 				[47045,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,1,1,1,0,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Stouffville = 			[48002,,	  [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0]];
+var Newmarket = 			[48006,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,1],	[0,1,1,1,1,1,1],	[0,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Parry_Sound = 			[49005,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Dorset = 				[49010,,	  [0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1]];
+var Ottawa = 				[51001,,	  [0,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[0,1,1,1,0,1,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1], [1,1,1,1,1,1,1]];
+var Ottawa_Central = 		[51002,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0]];
+var Petawawa = 				[51010,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1]];
+var Kingston = 	   			[52022,52023, [0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Belleville = 			[54012,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Morrisburg=				[56010,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1], [0,0,0,0,0,1,1]];
+var Cornwall = 				[56051,,	  [0,0,0,0,0,1,0],	[1,0,0,0,0,1,0],	[0,0,0,0,0,1,0],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Peterborough = 			[59006,,	  [1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Thunder_Bay =  			[63200,63203, [1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,1],	[0,0,0,0,0,1,1],	[0,0,0,0,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Sault_Ste_Marie = 	  	[71068,71078, [0,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,0,1,0],	[0,1,1,1,0,1,1],	[1,0,0,0,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,1,1,1],	[1,1,1,1,0,1,1],	[1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var North_Bay = 			[75010,,	  [0,0,0,0,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,0],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[1,1,1,1,0,1,1],	[0,1,1,1,0,1,1],	[0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1], [0,1,1,1,0,1,1]];
+var Sudbury = 	 			[77219,77233, [1,0,0,0,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1], [1,0,0,0,0,1,1], [1,0,0,0,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Sudbury2 = 	 			[77203,77219, [1,0,0,0,0,1,0],	[1,1,1,1,0,1,0],	[1,1,1,1,1,1,0],	[1,1,1,1,1,1,0],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1],	[1,0,0,0,0,1,1], [1,0,0,0,0,1,1], [1,0,0,0,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+var Milton = 				[44029,,	  [0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0],	[0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [0,0,0,0,0,0,0], [1,1,1,1,0,1,1], [1,1,1,1,0,1,1]];
+
+
+var p_focus=0;
+var m_focus=0;
+var d_focus=0;
+var h_focus=0;
+var browser="none";
+
+function loadStationsHistory() {
+	var browserName=navigator.appName; 
+	var browserVer=parseInt(navigator.appVersion);
+	if ((browserName=="Microsoft Internet Explorer") && (browserVer<7)) { 
+		browser="ie6"; 
+	} else {
+		browser="other"; 
+	}
+	checkStationsHistory();
+	document.aqi_search.m.options[0].selected=true;
+	document.aqi_search.e.options[0].selected=true;
+}
+
+function loadStations() {
+	var browserName=navigator.appName; 
+	var browserVer=parseInt(navigator.appVersion);
+	if ((browserName=="Microsoft Internet Explorer") && (browserVer<7)) { 
+			browser="ie6"; 
+	} else {
+			browser="other"; 
+	}
+	checkStations();
+	checkFutureDates('100');
+}
+
+function checkByStationID(stationID, myYear){
+	var yearChecked=myYear;
+	var stationName="";
+	if ((stationID!='') && (myYear!='')) {
+		if (stationID == 47045) {
+			checkPollutants(Barrie);
+			stationName="Barrie";
+		} else if (stationID ==54012) {
+			checkPollutants(Belleville);
+			stationName="Belleville";
+		} else if (stationID ==46089) {
+			checkPollutants(Brampton);
+			stationName="Brampton";
+		} else if (stationID ==46090) {
+			checkPollutants(Brampton);
+			stationName="Brampton";
+		} else if (stationID ==21005) {
+			checkPollutants(Brantford);
+			stationName="Brantford"; 
+		} else if (stationID ==44008) {
+			checkPollutants(Burlington);
+			stationName="Burlington";
+		} else if (stationID ==13001) {
+			checkPollutants(Chatham);
+			stationName="Chatham";
+		} else if (stationID ==56051) {
+			checkPollutants(Cornwall);
+			stationName="Cornwall";
+		} else if (stationID ==49010) {
+			checkPollutants(Dorset);
+			stationName="Dorset";
+		} else if (stationID ==28028) {
+			checkPollutants(Guelph);
+			stationName="Guelph";
+		} else if (stationID ==15020) {
+			checkPollutants(Grand_Bend);
+			stationName="Grand Bend";
+		} else if (stationID ==29000) {
+			checkPollutants(Hamilton_Downtown);
+			stationName="Hamilton Downtown";
+		} else if (stationID ==29114) {
+			checkPollutants(Hamilton_Mountain);
+			stationName="Hamilton Mountain";
+		} else if (stationID ==29118) {
+			checkPollutants(Hamilton_West);
+			stationName="Hamilton West";
+		} else if (stationID ==52022) {
+			checkPollutants(Kingston);
+			stationName="Kingston";
+		} else if (stationID ==52023) {
+			checkPollutants(Kingston);
+			stationName="Kingston";
+		} else if (stationID ==26060) {
+			checkPollutants(Kitchener);
+			stationName="Kitchener";
+		} else if (stationID ==15025) {
+			checkPollutants(London);
+			stationName="London";
+		} else if (stationID ==15026) {
+			checkPollutants(London);
+			stationName="London";
+		} else if (stationID ==13021) {
+			checkPollutants(Merlin);
+			stationName="Merlin"; 
+		} else if (stationID ==49005) {
+			checkPollutants(Parry_Sound);
+			stationName="Parry Sound";
+		} else if (stationID ==16015) {
+			checkPollutants(Port_Stanley);  
+			stationName="Port Stanley"; 
+		} else if ((stationID ==46108)  || (stationID ==46109)  || (stationID ==46110)) {
+			//alert( stationID) ;
+			if (yearChecked > 2007) {
+
+				checkPollutants(Mississauga2);
+			} else {
+				checkPollutants(Mississauga);
+			}
+			stationName="Mississauga";
+		} else if (stationID ==56010) {
+			checkPollutants(Morrisburg);
+			stationName="Morrisburg";
+		} else if (stationID ==22071) {
+			checkPollutants(Simcoe);
+			stationName="Simcoe";
+		} else if (stationID ==48002) {
+			checkPollutants(Stouffville);
+			stationName="Stouffville";
+		} else if (stationID ==48006) {
+			checkPollutants(Newmarket);
+			stationName="Newmarket";
+		} else if (stationID ==75010) {
+			checkPollutants(North_Bay);
+			stationName="North Bay";
+		} else if (stationID ==44015) {
+			checkPollutants(Oakville);
+			stationName="Oakville";
+		} else if (stationID ==44017) {
+			checkPollutants(Oakville);
+			stationName="Oakville";
+		} else if (stationID ==45025) {
+			checkPollutants(Oshawa);
+			stationName="Oshawa";
+		} else if ((stationID ==45026)  || (stationID ==45027) ) {
+			checkPollutants(Oshawa2);
+			stationName="Oshawa";
+		} else if (stationID ==51001) {
+			checkPollutants(Ottawa);
+			stationName="Ottawa";
+		} else if (stationID ==51002) {
+			checkPollutants(Ottawa_Central);
+			stationName="Ottawa Central";
+		} else if (stationID ==51010) {
+			checkPollutants(Petawawa);
+			stationName="Petawawa";
+		} else if (stationID ==59006) {
+			checkPollutants(Peterborough);
+			stationName="Peterborough";
+		} else if (stationID ==14064) {
+			checkPollutants(Sarnia);
+		} else if ((stationID ==14110) || (stationID ==14111)) {
+			checkPollutants(Sarnia_2);
+		} else if ((stationID ==71068) || (stationID ==71078)){
+			checkPollutants(Sault_Ste_Marie);
+			stationName="Sault Ste Marie";
+		} else if (stationID ==27067) {
+			checkPollutants(St_Catharines);
+			stationName="St Catharines";
+		} else if (stationID ==77219) {
+			checkPollutants(Sudbury);
+			stationName="Sudbury";
+		} else if (stationID ==77233)  {
+			checkPollutants(Sudbury);
+			stationName="Sudbury";
+		} else if (stationID ==77203)  {
+			checkPollutants(Sudbury2);
+			stationName="Sudbury";
+		}  else if (stationID ==63203) {
+			checkPollutants(Thunder_Bay);
+			stationName="Thunder Bay";
+		} else if (stationID ==63200) {
+			checkPollutants(Thunder_Bay);
+			stationName="Thunder Bay";
+		} else if (stationID ==18007) {
+			checkPollutants(Tiverton);
+		} else if (stationID ==31103) {
+			checkPollutants(Toronto_Downtown);
+			stationName="Toronto_Downtown";
+		} else if (stationID ==33003) {
+			checkPollutants(Toronto_East);
+			stationName="Toronto East";
+		} else if (stationID ==34020) {
+			checkPollutants(Toronto_North);
+			stationName="Toronto North";
+		} else if (stationID ==34021) {
+			checkPollutants(Toronto_North);
+			stationName="Toronto North";
+		} else if (stationID ==35125) {
+			checkPollutants(Toronto_West);
+			stationName="Toronto West";
+		} else if (stationID ==35125) {
+			checkPollutants(Toronto_West);
+			stationName="Toronto West";
+		} else if (stationID ==35003) {
+			checkPollutants(Toronto_West);
+			stationName="Toronto West";
+		} else if (stationID ==12008) {
+			checkPollutants(Windsor_Downtown);
+			stationName="Windsor Downtown";
+		} else if (stationID ==12016) {
+			checkPollutants(Windsor_West);
+			stationName="Windsor West";
+		} 
+	}
+	return stationName;
+}
+function checkStations(){
+	if (document.all || document.getElementById) {
+		var myNote="";
+		var stationName='';
+		if ((document.aqi_search.stationid.value!='') && (document.aqi_search.start_year.value!='')) {
+			stationName=checkByStationID(document.aqi_search.stationid.value, document.aqi_search.start_year.value); 
+		} else {
+			document.aqi_search.pol_code.options[0].disabled=false;
+			document.aqi_search.pol_code.options[0].style.color = "menutext";
+			document.aqi_search.pol_code.options[0].selected=true;
+		}
+		//writeNote(myNote,"Note");
+	}
+}
+function checkPurpose(){
+	if (document.all || document.getElementById) { 
+		if (document.aqi_search.c.value=='') {
+			myPurpose=0;
+		} else {
+			myPurpose=1; 
+		}
+	checkMonths();
+	}
+}
+function checkMonths(){  
+	if (document.aqi_search.p.value!= 0){
+		document.aqi_search.m.disabled=false;
+		document.aqi_search.e.disabled=false;
+		document.aqi_search.t.disabled=false;
+		if (myPurpose ==1) {
+			document.aqi_search.submitter.disabled=false;
+		} else {
+			document.aqi_search.submitter.disabled=true;
+		}
+	} else {
+		document.aqi_search.m.disabled=true;
+		document.aqi_search.e.disabled=true;
+		document.aqi_search.t.disabled=true;
+		document.aqi_search.submitter.disabled=true;  
+	}
+}
+function checkEndMonth(){  
+	var start=document.aqi_search.m.value-1;
+	if (start > document.aqi_search.e.value) {
+		document.aqi_search.e.options[0].selected=true;
+	}
+	for (var mon=1; mon<=12; mon++) {
+		if (start < document.aqi_search.e.options[mon].value){
+			document.aqi_search.e.options[mon].disabled=false;
+			document.aqi_search.e.options[mon].style.color = "menutext"
+		} else {
+			document.aqi_search.e.options[mon].disabled=true;
+			document.aqi_search.e.options[mon].style.color = "graytext";
+		}
+	}
+}
+function checkStationsHistory(){
+	if (document.all || document.getElementById) {
+		var myNote="";
+		var stationName='';
+
+		if ((document.aqi_search.s.value!='') && (document.aqi_search.y.value!='')) {
+			stationName=checkByStationID(document.aqi_search.s.value, document.aqi_search.y.value);
+			myNote=specialNote(stationName);
+	 		writeNote(myNote,"Note");
+	 		
+		} else {
+			document.aqi_search.p.options[0].disabled=false;
+			document.aqi_search.p.options[0].style.color = "menutext";
+			document.aqi_search.p.options[0].selected=true;
+			for (var pol=1; pol<=7; pol++) {
+			document.aqi_search.p.options[pol].disabled=true;
+			document.aqi_search.p.options[pol].style.color = "graytext";
+			}
+			document.aqi_search.m.disabled=true;
+			document.aqi_search.e.disabled=true;
+			document.aqi_search.t.disabled=true;
+			document.aqi_search.submitter.disabled=true;
+		}
+	}
+}
+function checkPollutants(my_station_pollutants) {
+
+
+	if (document.aqi_search.pol_code != undefined) {
+		checkPollutantsCharts(my_station_pollutants);
+	} else {
+		checkPollutantsHistory(my_station_pollutants);
+	}
+}
+function checkPollutantsHistory(my_station_pollutants) {          
+	var yearIndex=document.aqi_search.y.value - 1998; //converts year into array position 2000 -> 2, 2001 -->3, etc
+	document.aqi_search.p.options[0].disabled=false;
+	document.aqi_search.p.options[0].selected=true;
+	document.aqi_search.m.disabled=true;
+	document.aqi_search.e.disabled=true;
+	document.aqi_search.t.disabled=true;
+	//alert ("my_station_pollutants: '" + my_station_pollutants+"'");
+	for (var pol=0; pol<=6; pol++) { //loop though pollutants
+		var mySelection=pol+1;
+		if (my_station_pollutants[yearIndex][pol]==1) {
+			document.aqi_search.p.options[mySelection].disabled=false;
+			document.aqi_search.p.options[mySelection].style.color = "menutext";
+		} else {
+			document.aqi_search.p.options[mySelection].disabled=true;
+			document.aqi_search.p.options[mySelection].style.color = "graytext";
+		}
+	}
+}
+function checkPollutantsCharts(my_station_pollutants) {    
+		var optionCount= 0;	  
+		var selectChoosePollutant= false;
+		var curSelectedIndex= document.aqi_search.pol_code.selectedIndex; 
+		var curSelected= document.aqi_search.pol_code.options[document.aqi_search.pol_code.selectedIndex].value;
+		var yearIndex=document.aqi_search.start_year.value - 1998; //converts year into array position 2000 -> 2, 2001 -->3, etc
+		document.aqi_search.pol_code.options[0].disabled=false;
+		document.aqi_search.submitter.disabled=true;
+		var myOption=document.getElementById("p9");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][0] == 1) { //So2
+				myOption.disabled=false;
+				myOption.style.color = "menutext";
+				optionCount++;
+			} else {
+				myOption.disabled=true;
+				myOption.style.color = "graytext";
+				if (curSelected == 9) {
+					selectChoosePollutant = true;
+				}
+			}
+		}
+		var myOption=document.getElementById("p35");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][1]==1) { //(no)
+			document.aqi_search.pol_code.options[mySelection].disabled=false;
+			document.aqi_search.pol_code.options[mySelection].style.color = "menutext";
+			optionCount++;
+			} else {
+			document.aqi_search.pol_code.options[mySelection].disabled=true;
+			document.aqi_search.pol_code.options[mySelection].style.color = "graytext";
+			}
+		
+		}
+		var myOption=document.getElementById("p36");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][2]==1) { //(NO2)
+				myOption.disabled=false;
+				myOption.style.color = "menutext";
+				optionCount++;
+			} else {
+				myOption.disabled=true;
+				myOption.style.color = "graytext";
+				if (curSelected == 36) {
+					selectChoosePollutant = true;
+				}
+			}
+		}
+		var myOption=document.getElementById("p37");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][3]==1) { //(NOx)
+			document.aqi_search.pol_code.options[mySelection].disabled=false;
+			document.aqi_search.pol_code.options[mySelection].style.color = "menutext";
+			optionCount++;
+			} else {
+			document.aqi_search.pol_code.options[mySelection].disabled=true;
+			document.aqi_search.pol_code.options[mySelection].style.color = "graytext";
+			}
+		}
+		var myOption=document.getElementById("p46");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][4]==1) { //(CO)
+				myOption.disabled=false;
+				myOption.style.color = "menutext";
+				optionCount++;
+			} else {
+				myOption.disabled=true;
+				myOption.style.color = "graytext";
+				if (curSelected == 46) {
+					selectChoosePollutant = true;
+				}
+			}
+		}
+		var myOption=document.getElementById("p122");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][5]==1) { //(O3)
+				myOption.disabled=false;
+				myOption.style.color = "menutext";
+				optionCount++;
+			} else {
+				myOption.disabled=true;
+				myOption.style.color = "graytext";
+				if (curSelected == 122) {
+					selectChoosePollutant = true;
+				}
+			}
+		}
+		var myOption=document.getElementById("p124");
+		if( myOption !== null) {
+			if (my_station_pollutants[yearIndex][6]==1) { //(PM2.5)
+				myOption.disabled=false;
+				myOption.style.color = "menutext";
+				optionCount++;
+			} else {
+				myOption.disabled=true;
+				myOption.style.color = "graytext";
+				if (curSelected == 124) {
+					selectChoosePollutant = true;
+				}
+			}
+		}
+		var myOption=document.getElementById("p42");
+		if( myOption !== null) {
+			if ((my_station_pollutants[0]==29000) ||(my_station_pollutants[0]==14064) ||(my_station_pollutants[0]==71078) ||(my_station_pollutants[0]==71068) ||(my_station_pollutants[0]==12016)) { //(TRS)
+				myOption.disabled=false;
+				myOption.style.color = "menutext";
+				optionCount++;
+			} else {
+				myOption.disabled=true;
+				myOption.style.color = "graytext";
+				if (curSelected == 42) {
+					selectChoosePollutant = true;
+				}
+			}
+		}
+		var myOption=document.getElementById("p0");
+		//alert ("optionCount " + optionCount);
+		if( optionCount > 0) {
+			document.aqi_search.pol_code.options[0] = new Option("Select Pollutant",0);
+			document.aqi_search.pol_code.options[0].id = "p0";
+			document.aqi_search.pol_code.options[0].style.color = "menutext";
+			if (selectChoosePollutant) {
+				document.aqi_search.pol_code.options[0].selected = true
+			} else {
+				document.aqi_search.pol_code.options[curSelectedIndex].selected = true
+		  }
+		  //alert ("document.aqi_search.pol_code.options[0].selected " + document.aqi_search.pol_code.options[0].selected);
+			if (document.aqi_search.pol_code.options[0].selected != true) {
+				document.aqi_search.submitter.disabled=false;
+			} else {
+				document.aqi_search.submitter.disabled=true;
+			}
+		} else {
+			document.aqi_search.pol_code.options[0] = new Option("No Data Available",0);
+			document.aqi_search.pol_code.options[0].id = "p0";
+			document.aqi_search.pol_code.options[0].style.color = "graytext";
+			document.aqi_search.pol_code.options[0].selected = true;
+			
+		}
+
+}
+
+
+function loadStations() {
+	var browserName=navigator.appName; 
+	var browserVer=parseInt(navigator.appVersion);
+	if ((browserName=="Microsoft Internet Explorer") && (browserVer<7)) { 
+			browser="ie6"; 
+	} else {
+			browser="other"; 
+	}
+	//browser="ie6"; 
+	checkStations();
+	checkFutureDates('100');
+}
+
+function restore_ie(e) {
+	if (isdefined(document.aqi_search.pol_code)){
+		restore_ie_chart(e)
+	} else {
+		restore_ie_history(e)
+	}
+}
+function focus_ie() {
+	//alert ("p_focus: " +  document.aqi_search.pol_code.selectedIndex);
+	if (isdefined(document.aqi_search.p)){
+		p_focus = document.aqi_search.p.selectedIndex;
+	} else {
+		if (isdefined(document.aqi_search.pol_code)){
+			p_focus = document.aqi_search.pol_code.selectedIndex;
+		}
+		if (isdefined(document.aqi_search.my_hour)){
+			h_focus = document.aqi_search.my_hour.selectedIndex;
+		}
+		if (isdefined(document.aqi_search.start_day)){
+			d_focus = document.aqi_search.start_day.selectedIndex;
+		}
+		if (isdefined(document.aqi_search.start_month)){
+			m_focus = document.aqi_search.start_month.selectedIndex;
+		}
+	}
+}
+function focus_endMonth() {
+	m_focus = document.aqi_search.e.selectedIndex;
+	//alert ("focus: '" + p_focus+ "' again");
+}
+
+function restore_endMonth() {
+	if (browser == "ie6") {
+		if (document.aqi_search.e.options[document.aqi_search.e.selectedIndex].disabled) {
+			document.aqi_search.e.selectedIndex=m_focus;
+		}
+	}
+}
+function restore_ie_history(e) {
+	if (browser == "ie6") {
+		if (document.aqi_search.p.options[document.aqi_search.p.selectedIndex].disabled) {
+		document.aqi_search.p.selectedIndex=p_focus;
+		document.aqi_search.m.disabled=true;
+		document.aqi_search.e.disabled=true;
+		document.aqi_search.t.disabled=true;
+		document.aqi_search.submitter.disabled=true; 
+		}
+	}
+}
+function restore_ie_chart(e) {
+	//if (browser == "ie6") {
+		if (isdefined(document.aqi_search.pol_code)){
+				if (document.aqi_search.pol_code.options[document.aqi_search.pol_code.selectedIndex].value ==0) {
+					document.aqi_search.submitter.disabled=true;
+				} else {
+					document.aqi_search.submitter.disabled=false;
+				}
+				if (document.aqi_search.pol_code.options[document.aqi_search.pol_code.selectedIndex].disabled) {
+					document.aqi_search.pol_code.selectedIndex=p_focus;
+			}
+		}
+			
+			if (document.aqi_search.start_month.options[document.aqi_search.start_month.selectedIndex].disabled) {
+				document.aqi_search.start_month.selectedIndex=m_focus;
+			}
+			if (document.aqi_search.start_day.options[document.aqi_search.start_day.selectedIndex].disabled) {
+				document.aqi_search.start_day.selectedIndex=d_focus;
+			}
+		if (isdefined(document.aqi_search.pol_code)){
+			if (document.aqi_search.my_hour.options[document.aqi_search.my_hour.selectedIndex].disabled) {
+				document.aqi_search.my_hour.selectedIndex=h_focus;
+			}
+		}
+	//}
+}
+
+
+function isdefined(variable){
+    return (typeof(window[variable]) == "undefined")?  false: true;
+}
+
+function checkFutureDates(lastHourOfDay){
+    //alert("disableFutureDates" + lastHourOfDay);
+    var daysBack=0;
+    if (lastHourOfDay == 100) { 
+    	//daysBack=2;
+    }
+    var startDate = new Date();
+    startDate.setDate(startDate.getDate()-daysBack);
+		var curMonth = startDate.getMonth() + 1;
+		var curDay = startDate.getDate();
+		var curYear = startDate.getFullYear();
+		var selectedYear =document.aqi_search.start_year.options[document.aqi_search.start_year.selectedIndex].value;
+		var selectedMonth = document.aqi_search.start_month.options[document.aqi_search.start_month.selectedIndex].value;
+		var selectedDay = document.aqi_search.start_day.options[document.aqi_search.start_day.selectedIndex].value;
+		var selectedMonthLength = daysInMonth(selectedMonth-1, selectedYear);
+		//alert("selectedMonthLength: " + selectedMonthLength + "daysBack: " +daysBack);
+		//alert("selectedMonth: " + selectedMonth + "curMonth: " +curMonth);
+		updateMonthOptions(selectedMonthLength);
+		if (selectedYear == curYear) {
+			disableMonthOptions(curMonth, selectedMonth);
+			if (selectedMonth >= curMonth) {
+				disableDayOptions(curDay, selectedDay, selectedMonthLength);
+			}	else {
+				enableDayOptions(selectedDay, selectedMonthLength);
+			}
+		} else {
+			enableMonthOptions();
+			enableDayOptions(selectedDay, selectedMonthLength);
+		}
+		if (lastHourOfDay != 100) { 
+			checkHourOptions(lastHourOfDay, curYear, curMonth, curDay);
+		} 
+}
+
+function disableMonthOptions(curMonth, selectedMonth) {
+	for (i=curMonth+1; i<=12; i++) {
+		var optionIdName = 'm'+ i;
+		if (i > curMonth) {
+			disableOption(optionIdName);
+		} else {
+			enableOption(optionIdName);
+		}
+	}
+	if (selectedMonth > curMonth) {
+		document.aqi_search.start_month.options[curMonth-1].selected=true;
+	}	
+}
+
+function enableMonthOptions(curMonth, selectedMonth) {
+	for (i=1; i<=12; i++) {
+		var optionIdName = 'm'+ i;
+		enableOption(optionIdName);
+	}
+}
+
+
+function disableOption(optionIdName){
+	var optionId=document.getElementById(optionIdName)
+	if( optionId !== null) {
+		optionId.disabled=true;
+		optionId.style.color = "graytext";
+	}
+}
+function enableOption(optionIdName){
+	var optionId=document.getElementById(optionIdName)
+	if( optionId !== null) {
+		optionId.disabled=false;
+		optionId.style.color = "menutext";
+	}
+}
+
+
+function disableDayOptions(curDay, selectedDay, selectedMonthLength) {
+	//alert ("disableDayOptions:" + selectedMonthLength + "   selectedDay:" +selectedDay + "   curDay:" +curDay)
+	for (i=1; i<=selectedMonthLength; i++) {
+		var optionIdName = 'd'+ i;
+		if (i > curDay) {
+			disableOption(optionIdName);
+		} else {
+			enableOption(optionIdName);
+		}
+	}
+	if (selectedDay > curDay) {
+		document.aqi_search.start_day.options[curDay-1].selected=true;
+	}else if (selectedDay > selectedMonthLength) {
+		document.aqi_search.start_day.options[selectedMonthLength-1].selected=true;
+	}	else {
+		document.aqi_search.start_day.options[selectedDay-1].selected=true;
+	}
+		
+
+}
+
+function enableDayOptions(selectedDay, selectedMonthLength) {
+	//alert ("enableDayOptions:" + selectedMonthLength + "   selectedDay:" +selectedDay);
+	for (i=1; i<=selectedMonthLength; i++) {
+		var optionIdName = 'd'+ i;
+		enableOption(optionIdName);
+	}
+	if (selectedDay > selectedMonthLength) {
+		document.aqi_search.start_day.options[selectedMonthLength-1].selected=true;
+	}	else {
+		document.aqi_search.start_day.options[selectedDay-1].selected=true;
+	}
+}
+function daysInMonth(thisMonth, thisYear){
+	return 32 - new Date(thisYear, thisMonth, 32).getDate();
+}
+
+function updateMonthOptions(daysInMonth){
+	//alert("updateMonthOptions " + daysInMonth );
+	var day29 = new Option("29",29);
+  var day30 = new Option("30",30);
+  var day31 = new Option("31",31);
+	if (daysInMonth == 28) {
+		document.aqi_search.start_day.options[30] =null;
+		document.aqi_search.start_day.options[29] =null;
+		document.aqi_search.start_day.options[28] =null;
+	} else if (daysInMonth == 29) {
+		document.aqi_search.start_day.options[30] =null;
+		document.aqi_search.start_day.options[29] =null;
+		document.aqi_search.start_day.options[28] =day29;
+		document.aqi_search.start_day.options[28].id = "d29";
+		
+	} else if (daysInMonth == 30) {
+		document.aqi_search.start_day.options[28] =day29;
+		document.aqi_search.start_day.options[28].id = "d29";
+		document.aqi_search.start_day.options[29] =day30;
+		document.aqi_search.start_day.options[29].id = "d30";
+		document.aqi_search.start_day.options[30] =null;
+	} else {
+		document.aqi_search.start_day.options[28] =day29;
+		document.aqi_search.start_day.options[28].id = "d29";
+		document.aqi_search.start_day.options[29] =day30;
+		document.aqi_search.start_day.options[29].id = "d30";
+		document.aqi_search.start_day.options[30] =day31;
+		document.aqi_search.start_day.options[30].id = "d31";
+	}
+
+}
+
+function checkHourOptions(lastHourOfDay, curYear, curMonth, curDay) {
+	var selectedYear =document.aqi_search.start_year.options[document.aqi_search.start_year.selectedIndex].value;
+	var selectedMonth = document.aqi_search.start_month.options[document.aqi_search.start_month.selectedIndex].value;
+	var selectedDay = document.aqi_search.start_day.options[document.aqi_search.start_day.selectedIndex].value;
+	var pol_code = document.aqi_search.pol.value;
+	
+	//alert ( "checkHourOptions Year: " + selectedYear + "=" + curYear  + " Month: " + selectedMonth + "=" + curMonth +" Day:" + selectedDay + "=" + curDay );
+	var selectedHour = document.aqi_search.my_hour.options[document.aqi_search.my_hour.selectedIndex].value;
+	if ((selectedYear == curYear) && (selectedMonth == curMonth) && (selectedDay ==curDay)){
+		updateHourOptions(selectedHour, lastHourOfDay)
+	} else if (lastHourOfDay < 23){
+		updateHourOptions(selectedHour, 23)
+	}
+	if (pol_code == 250) {
+		//alert ( "checkHourOptions Year: " + selectedYear + " Month: " + selectedMonth + " Day:" + selectedDay  );
+		if (((selectedYear == 2007) && (selectedMonth == 1)) || ((selectedYear == 2007) && (selectedMonth == 2) && (selectedDay < 15))){
+			disableAQIHourOptions();
+		} else {
+			enableAQIHourOptions();
+		}
+	}
+}
+function updateHourOptions(selectedHour, lastHourOfDay) {
+	var myHour;
+	for (i=0; i<=lastHourOfDay; i++) {
+		if (i == 0) {
+			document.aqi_search.my_hour.options[i] =new Option('12:00 AM',i);
+		} else if (i < 12) {
+			document.aqi_search.my_hour.options[i] =new Option( i +':00 AM',i);
+		} else if (i ==12) {
+			document.aqi_search.my_hour.options[i] =new Option('12:00 PM',i);
+		} else {
+			myHour = (i -12);
+			document.aqi_search.my_hour.options[i] =new Option( myHour +':00 PM',i);
+		}
+		document.aqi_search.my_hour.options[i].id = "h"+i;
+	}
+	for (i=23; i > lastHourOfDay; i--) {
+		document.aqi_search.my_hour.options[i] = null;
+	}
+	if (selectedHour > lastHourOfDay) {
+		document.aqi_search.my_hour.options[lastHourOfDay].selected=true;
+	}else{
+		document.aqi_search.my_hour.options[selectedHour].selected=true;
+	}
+}
+
+
+function disableAQIHourOptions() {
+	var selectedHour = document.aqi_search.my_hour.options[document.aqi_search.my_hour.selectedIndex].value;
+	for (i=0; i<=6; i++) {
+		var optionIdName = 'h'+ i;
+			disableOption(optionIdName);
+	}
+	for (i=20; i<=23; i++) {
+		var optionIdName = 'h'+ i;
+			disableOption(optionIdName);
+	}
+	if (selectedHour < 7){
+		document.aqi_search.my_hour.options[7].selected=true;
+	} else if (selectedHour > 19) {
+		document.aqi_search.my_hour.options[19].selected=true;
+	}	
+}
+
+function enableAQIHourOptions() {
+	for (i=0; i<=23; i++) {
+		var optionIdName = 'h'+ i;
+		enableOption(optionIdName);
+	}
+}
+
+function writeNote(myNote,id)  {
+	if (document.getElementById){
+		x = document.getElementById(id);
+		x.innerHTML = '';
+		x.innerHTML = myNote;
+	} else if (document.all) {
+		x = document.all[id];
+		x.innerHTML = myNote;
+	} else if (document.layers){
+		x = document.layers[id];
+		text2 = '<P CLASS="testclass">' + myNote + '</P>';
+		x.document.open();
+		x.document.write(text2);
+		x.document.close();
+	}
+}
+
+function specialNote(stationName, myYear) {
+	var thisNote="";
+	if ((stationName == "Stouffville") && (myYear >2001)) {
+		thisNote="<p><strong>Note:</strong> There are no records for Stouffville in " + myYear  +". Newmarket replaced Stouffville as the AQI site in York Region in 2002.</p>";
+	} else if ((stationName == "Newmarket") && (myYear <2002)) {
+		thisNote="<p><strong>Note:</strong> There are no records for Newmarket in " + myYear  +". Newmarket began monitoring in 2002 at which time it replaced Stouffville as the AQI site in York Region.</p>";
+	} else if ((stationName == "Simcoe") && (myYear >2003)) {
+		thisNote="<p><strong>Note:</strong> There are no records for Simcoe in " + myYear  +".</p>";
+	} else if ((stationName == "Brantford") && (myYear < 2004)) {
+		thisNote="<p><strong>Note:</strong> Brantford began monitoring in 2004.</p>";
+	} else if ((stationName == "Belleville") && (myYear < 2003)) {
+		thisNote="<p><strong>Note:</strong> Belleville began monitoring in 2003.</p>";
+	} else if ((stationName == "Oakville") && (myYear ==2003)) {
+		thisNote="<p><strong>Note:</strong> Station 44017 replaced station 44015 as the Oakville AQI site in 2003.</p>";
+	} else if ((stationName == "Oshawa") && (myYear ==2005)) {
+		thisNote="<p><strong>Note:</strong> Station 45026 replaced station 45025 as the Oshawa AQI site in 2005.</p>";
+	} else if ((stationName == "London") && (myYear > 2012)) {
+		thisNote="<p><strong>Note:</strong> Station 15026 replaced station 15025 as the London AQI site in 2013.</p>";
+	} else if ((stationName == "Mississauga") && (myYear ==2004)) {
+		thisNote="<p><strong>Note:</strong> Station 46109 replaced station 46110 as the Mississauga AQI site in 2004.</p>";
+	} else if ((stationName == "Mississauga") && (myYear ==2008)) {
+		thisNote="<p><strong>Note:</strong> Station 46108 replaced station 46109 as the Mississauga AQI site in 2008.</p>";
+	} else if ((stationName == "Sudbury") && (myYear ==2004)) {
+		thisNote="<p><strong>Note:</strong> Station 77219 replaced station 77203 as the Sudbury AQI site in 2004.</p>";
+	} else if ((stationName == "Sudbury") && (myYear > 2012)) {
+		thisNote="<p><strong>Note:</strong> Station 77233 replaced station 77219 as the Sudbury AQI site in 2013.</p>";
+	} else if ((stationName == "Toronto West") && (myYear ==2003)) {
+		thisNote="<p><strong>Note:</strong> Station 35125 replaced station 35003 as the Toronto West AQI site in 2003.</p>";
+	} else if ((stationName == "Thunder Bay") && (myYear ==2004)) {
+		thisNote="<p><strong>Note:</strong> Station 63203 replaced station 63200 as the Thunder Bay AQI site in 2004.</p>";
+	} else if ((stationName == "Sault Ste Marie") && (myYear ==2004)) {
+		thisNote="<p><strong>Note:</strong> Station 71078 replaced station 71068 as the Sault Ste Marie AQI site in 2004.</p>";
+	} else if ((stationName == "Parry Sound") && (myYear ==2000)) {
+		thisNote="<p><strong>Note:</strong> Parry Sound began monitoring in 2001.</p>";
+	} else if ((stationName == "Port Stanley") && (myYear < 2002)) {
+		thisNote="<p><strong>Note:</strong> Port Stanley began monitoring in 2002.</p>";
+	} else if ((stationName == "Barrie") && (myYear < 2002)) {
+		thisNote="<p><strong>Note:</strong> Barrie began monitoring in 2002.</p>";
+	} else if ((stationName == "Chatham") && (myYear < 2005)) {
+		thisNote="<p><strong>Note:</strong> Chatham began monitoring in 2005.</p>";
+	}else if ((stationName == "Morrisburg") && (myYear < 2005)) {
+		thisNote="<p><strong>Note:</strong> Morrisburg began monitoring in 2005.</p>";
+	}else if ((stationName == "Merlin") && (myYear >= 2005)) {
+		thisNote="<p><strong>Note:</strong> There are no records for Merlin in " + myYear  + ".</p>";
+	}else if ((stationName == "Kingston") && (myYear >= 2007)) {
+		thisNote="<p><strong>Note:</strong> Station 52023 replaced station 52023 as the Kingston AQI site in 2014. Station 52022 replaced station 52020 as the Kingston AQI site in 2007.</p>";
+	}else if ((stationName == "Ottawa Central") && (myYear < 2007)) {
+		thisNote="<p><strong>Note:</strong> Ottawa Central began monitoring in 2007.</p>";
+	}else if ((stationName == "Petawawa") && (myYear < 2007)) {
+		thisNote="<p><strong>Note:</strong> Petawawa began monitoring in 2007.</p>";
+	}
+	return thisNote;
+}
+
+function fpm25Note() {
+	var polSelected;
+	if (document.aqi_search.pol_code != undefined) {
+		polSelected= document.aqi_search.pol_code.options[document.aqi_search.pol_code.selectedIndex].value;
+	} else {
+		polSelected= document.aqi_search.p.options[document.aqi_search.p.selectedIndex].value;
+	}
+	var fpm25NoteDiv=document.getElementById("FPM25Note")
+	if( fpm25NoteDiv !== null) {
+		if (polSelected == 124) {
+			fpm25NoteDiv.style.display = "block";
+		} else {
+			fpm25NoteDiv.style.display = "none";
+		}
+	}
+	//alert ("selected pollutant: " + polSelected );
+}
